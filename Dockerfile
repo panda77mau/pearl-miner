@@ -13,12 +13,7 @@ RUN curl -L -o miner.tar.gz https://pearl.alphapool.tech/downloads/alpha-V1.7.4.
 ENV PEARL_ADDRESS=""
 ENV PEARL_POOL_HOST="us2.alphapool.tech"
 ENV PEARL_POOL_PORT="5566"
-ENV PEARL_BACKEND="auto"
+ENV PEARL_BACKEND=""
 ENV PEARL_DIFFICULTY="1048576"
 
-CMD ["sh", "-c", "./alpha/alpha \
-  --pool stratum+tcp://${PEARL_POOL_HOST}:${PEARL_POOL_PORT} \
-  --address ${PEARL_ADDRESS} \
-  --worker salad_${SALAD_ORGANIZATION_NAME}_${SALAD_CONTAINER_GROUP_NAME} \
-  --password \"x;d=${PEARL_DIFFICULTY}\" \
-  --force-backend ${PEARL_BACKEND}"]
+CMD ["sh", "-c", "if [ -n \"$PEARL_BACKEND\" ]; then BACKEND_ARG=\"--force-backend $PEARL_BACKEND\"; else BACKEND_ARG=\"\"; fi; ./alpha/alpha --pool stratum+tcp://${PEARL_POOL_HOST}:${PEARL_POOL_PORT} --address ${PEARL_ADDRESS} --worker salad_${SALAD_ORGANIZATION_NAME}_${SALAD_CONTAINER_GROUP_NAME}_$(echo ${SALAD_MACHINE_ID:-x} | cut -c1-6) --password \"x;d=${PEARL_DIFFICULTY}\" $BACKEND_ARG"]
